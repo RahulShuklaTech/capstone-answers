@@ -5,7 +5,16 @@ export const SET_LOADING = 'SET_LOADING';
 export const SET_ADDING =  'SET_ADDING';
 export const SET_ERROR = 'SET_ERROR';
 export const SET_STUDENTS = 'SET_STUDENTS';
+export const SET_LASTPAGE = 'SET_LASTPAGE';
 
+
+
+export const lastPage = (data) => {
+    return {
+        type: SET_LASTPAGE,
+        payload: data
+    }
+}
 
 
 export const setStudents = (data) => {

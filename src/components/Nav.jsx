@@ -1,8 +1,9 @@
 import React from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import firebase from '../firebaseConfig'
+import { lastPage } from '../redux/actions/loginActions';
 
 
 
@@ -44,23 +45,33 @@ const useStyles = makeStyles({
 
 
 
-export const Nav = () => {
+export const Nav = ({ location }) => {
     const classes = useStyles();
     const history = useHistory();
+    const dispatch = useDispatch();
 
     const { user } = useSelector(state => state)
-    const handleLogout = () => { 
+    const handleLogout = () => {
         firebase.auth().signOut();
-        history.push("/")
+
+        history.push({
+
+            pathname: '/',
+
+            
+        })
+
+        dispatch(lastPage(location))
+
     }
-    
+
 
     return (
-            <div className={classes.root}>
+        <div className={classes.root}>
             <div className={classes.photo}>
-                    <img src={user.photoURL} alt="Sign out" className={classes.photo} onClick = {handleLogout}/>
-                </div>
+                <img src={user.photoURL} alt="Sign out" className={classes.photo} onClick={handleLogout} />
             </div>
-        
+        </div>
+
     )
 }

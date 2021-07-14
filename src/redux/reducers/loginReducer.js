@@ -1,13 +1,14 @@
-import {SIGNING_IN,SIGNED_IN, TEXTBOX_VALUE, SET_ADDING, SET_LOADING, SET_ERROR, SET_STUDENTS } from '../actions/loginActions'
+import {SIGNING_IN,SIGNED_IN, TEXTBOX_VALUE, SET_ADDING, SET_LOADING, SET_ERROR, SET_STUDENTS, SET_LASTPAGE } from '../actions/loginActions'
 
 let initialState =  {
     user:{},
     disableButton: false,
-    loading: false,
+    loading: true,
     adding: false,
     students: [],
     textbox: "",
-    error: ""
+    error: "",
+    lastpage:""
 }
 
 
@@ -27,8 +28,12 @@ export default function loginReducer(state = initialState, action) {
         case SET_ERROR: 
             return {...state, error: action.payload}
         case SET_STUDENTS: 
-            return {...state, students: action.payload}
-
+            let copy = [...state.students]
+            copy.push(...action.payload)
+            
+            return {...state, students: copy}
+        case SET_LASTPAGE: 
+            return {...state, lastpage: action.payload}
         default:
             return state;
     }

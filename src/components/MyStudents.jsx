@@ -52,63 +52,63 @@ const useStyles = makeStyles({
 });
 
 
-const checkValues = (value) => { 
-    if(value.length === 0) return  {status: false,message: "Student List cannot be empty"};
+const checkValues = (value) => {
+    if (value.length === 0) return { status: false, message: "Student List cannot be empty" };
     let newSet = new Set(value);
-    if(newSet.size !== value.length) return {status: false,message: "Duplicate Student Names"};;
-    return {status: true};
+    if (newSet.size !== value.length) return { status: false, message: "Duplicate Student Names" };;
+    return { status: true };
 }
 
 
 
 export const MyStudents = () => {
     const classes = useStyles();
-    const { user,textbox,adding,error } = useSelector(state => state)
+    const { user, textbox, adding, error } = useSelector(state => state)
     const dispatch = useDispatch();
     const history = useHistory();
 
 
-    const handleSubmit = async (e) => { 
+    const handleSubmit = async (e) => {
         e.preventDefault();
         let studentNames = textbox.split(/[\n,]+/).sort()
         let checkData = checkValues(studentNames);
-        if(checkData.status === false) {
+        if (checkData.status === false) {
             alert(checkData.message);
             return;
         }
-        if(checkData.status === true) { 
-            dispatch(setError("")) 
+        if (checkData.status === true) {
+            dispatch(setError(""))
             dispatch(setAdding(true))
-            await await new Promise(resolve => setTimeout(resolve,800))
-            const title = user.email.replaceAll(".","");
+            // await await new Promise(resolve => setTimeout(resolve, 800))
+            const title = user.email.replaceAll(".", "");
             const database = firebase.firestore();
             const usersRef = database.collection(title);
 
-            for(let student of studentNames){
+            for (let student of studentNames) {
                 try {
                     const id = await usersRef.doc();
-                    await id.set({name: student, answer: ""});
-                }catch(e){
-                    console.log("error",e.message);
-                    
-                    dispatch(setError(e.message)) 
+                    await id.set({ name: student, answer: "" });
+                } catch (e) {
+                    console.log("error", e.message);
+
+                    dispatch(setError(e.message))
                 }
 
             }
 
-           
+
             dispatch(setAdding(false));
             history.push("/dashboard");
         }
-            
+
 
     }
-    
+
     const authListner = () => {
         firebase.auth().onAuthStateChanged(user => {
-            if(user){
+            if (user) {
                 dispatch(signedIn(user))
-            }else{
+            } else {
                 dispatch(signedIn({}))
                 history.push("/")
             }
@@ -121,23 +121,21 @@ export const MyStudents = () => {
     //     firebase.auth().signOut();
     //     history.push("/")
     // }
-    
+
     useEffect(() => {
         authListner();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
 
     return (
         <div className={classes.mystudents}>
-           
+
             <div className={classes.root}>
-            <Nav />
-                {/* <div className={classes.photo}>
-                    <img src={user.photoURL} alt="Sign out" className={classes.photo} onClick = {handleLogout}/>
-                </div> */}
+                <Nav location = "mystudents"/>
+
                 <Typography variant="h2" component="h2" >
                     My Students
                 </Typography>
@@ -146,17 +144,17 @@ export const MyStudents = () => {
                     Enter the names of each student who will answer your questions, separated by commas.
                 </Typography>
 
-                <textarea 
-                    className={classes.textarea} 
-                    rows="3" cols="50" 
-                    placeholder="Enter students names here" 
-                    value = {textbox}
-                    onChange = {(e) => dispatch(textboxValue(e.target.value))}
-                    />
-                <Box className = {classes.box}>
-                <Button variant="contained" color="primary" onClick = {handleSubmit}>Submit</Button>
-                {error && <p>Error adding data</p>}
-                {adding && <p>Adding data </p>}
+                <textarea
+                    className={classes.textarea}
+                    rows="3" cols="50"
+                    placeholder="Enter students names here"
+                    value={textbox}
+                    onChange={(e) => dispatch(textboxValue(e.target.value))}
+                />
+                <Box className={classes.box}>
+                    <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
+                    {error && <p>Error adding data</p>}
+                    {adding && <p>Adding data </p>}
                 </Box>
             </div>
         </div>

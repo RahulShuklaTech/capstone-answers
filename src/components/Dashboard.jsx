@@ -1,12 +1,13 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Card, CardContent, CardHeader, Container, Grid, Paper, Typography } from '@material-ui/core';
+import { Box, Button, Card, CardContent, CardHeader, Container, Grid, Paper, Typography } from '@material-ui/core';
 import { Nav } from './Nav';
 import { useEffect } from 'react';
 import firebase from '../firebaseConfig'
 import { setLoading, setStudents, signedIn } from '../redux/actions/loginActions';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link, useHistory } from 'react-router-dom';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 
 
@@ -32,6 +33,11 @@ const useStyles = makeStyles({
 
     },
 
+    loading: {
+        width: '50%',
+        margin: '5rem auto'
+    },
+
     photo: {
         width: "4rem",
         height: "4rem",
@@ -43,22 +49,21 @@ const useStyles = makeStyles({
         minHeight: "200px",
         border: "2px solid #303F9F",
         padding: "1rem"
+    },
+    box: {
+        width: "100%",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+
     }
 });
 
-
-
-
-const Dashboard = () => {
-    const { textbox, user, students,loading } = useSelector(state => state)
-    const dispatch = useDispatch();
-    const classes = useStyles();
-    const history = useHistory();
-
-    const getDataFromServer = async () => {
+const getDataFromServer = async (dispatch, user) => {
+    if (user.email) {
         dispatch(setLoading(true))
-        const database = firebase.firestore();
-
+        const database = await firebase.firestore();
+        // console.log(user)
         const title = user.email.replaceAll(".", "");
         const usersRef = database.collection(title);
         const doc = await usersRef.get();
@@ -68,61 +73,99 @@ const Dashboard = () => {
 
         let data = [];
         doc.forEach((doc) => {
-            
+
             data.push(doc.data());
         }
         )
-        if(data.length){
+        if (data.length) {
+            console.log("data", data)
             dispatch(setStudents(data))
         }
-        
-        console.log("students",students);
+
+
         dispatch(setLoading(false));
-
     }
+}
 
-    const authListner = () => {
-        firebase.auth().onAuthStateChanged(user => {
-            if(user){
-                dispatch(signedIn(user))
-            }else{
-                dispatch(signedIn({}))
-                history.push("/")
-            }
 
-        })
-    }
+const authListner = async (dispatch, history) => {
+    // setLoading(true)
+    firebase.auth().onAuthStateChanged(user => {
+
+        if (user) {
+            dispatch(signedIn(user))
+        } else {
+            dispatch(signedIn({}))
+            history.push("/")
+        }
+
+    })
+    // getDataFromServer(dispatch, user, setStudents, setLoading);
+    // setLoading(false)
+}
+
+
+
+
+const Dashboard = () => {
+    const { textbox, user, students, loading } = useSelector(state => state)
+    const dispatch = useDispatch();
+    const classes = useStyles();
+    const history = useHistory();
+
+    console.log("students", students);
+
+
+
     useEffect(() => {
-        authListner();
-        getDataFromServer();
-       
+        authListner(dispatch, history);
+
 
     }, [])
 
-    if(loading) return <div>Loading...</div>
-    // console.log("students",students)
-    return (
-        <Container  className={classes.mystudents}>
-           
+    useEffect(() => {
+        if (user.email) {
+            getDataFromServer(dispatch, user);
+        }
 
-            <Paper elevation={3} spacing={3} className= {classes.root} style={{ minHeight: "100vh", minWidth: "90vw", padding: "1rem" }}>
-            <Nav />
-                <Typography variant="h2" component="h2">
-                    Dashboard
-                </Typography>
+    }, [user])
+
+
+
+
+    if (loading && students.length === 0) return <div className={classes.loading}><LinearProgress /></div>
+    console.log("students", typeof students)
+    return (
+        <Container className={classes.mystudents}>
+
+
+            <Paper elevation={3} spacing={3} className={classes.root} style={{ minHeight: "100vh", minWidth: "90vw", padding: "1rem" }}>
+                <Nav location="dashboard" />
+                <Box  className = {classes.box} >
+                    <Typography variant="h2" component="h2">
+                        Dashboard
+                    </Typography>
+                    <Box >
+                        <Button variant="contained" color="primary" onClick={() => history.push("/")}>End Session</Button>
+                       
+                    </Box>
+                </Box>
                 <Typography variant="subtitle1" >
-                    Student Link: <Link to = "/">http://localhost:3000/s/students</Link> 
+                    Student Link: <Link to="/">http://localhost:3000/s/students</Link>
                 </Typography>
                 <Grid container spacing={3}>
+                    {/* {students.map(student =>  console.log("sdfkhfskhsadfjk",student))} */}
                     {
-                        textbox.split(/[\n,]+/).sort().map((item, index) => {
+                        students.map((item, index) => {
                             return (
                                 <Grid item xs={12} md={4} key={index}>
                                     <Card>
-                                        <CardHeader title={item} />
+                                        <CardHeader title={item.name} />
 
                                         <CardContent>
-                                            <Typography variant="subtitle1">{(students.length && students[index].name === item) && students[index].answer} </Typography>
+                                            {console.log("sdfkhfskhsadfjk", item)}
+                                            {/* {item.name} */}
+                                            {/* <Typography variant="subtitle1">{(students.length && students[index].name === item.name) && students[index].answer} </Typography> */}
                                         </CardContent>
                                     </Card>
                                 </Grid>

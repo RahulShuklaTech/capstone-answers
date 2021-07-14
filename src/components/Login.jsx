@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom'
@@ -7,16 +7,28 @@ import {  signedIn, signIn } from '../redux/actions/loginActions';
 import "./styles/LoginStyle.css"
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
+import { useLocation } from "react-router-dom";
 
 
 export const Login = () => {
 
     const history = useHistory();
     const auth = firebase.auth();
+    // const location = useLocation();
 
 
     const dispatch = useDispatch();
-    const { disableButton } = useSelector(state => state);
+    const { disableButton,lastpage } = useSelector(state => state);
+
+
+    useEffect(() => {
+        if(lastpage){
+            // console.log(location.pathname); // result: '/secondpage'
+            console.log(lastpage); // result: 'some_value'
+        }
+        
+     }, []);
+ 
 
     const signInWithGoogle = async () => {
 
@@ -36,7 +48,11 @@ export const Login = () => {
         } catch (error) {
             console.log("error", error.message)
         }
-        history.push("/mystudents")
+        console.log("jsadfhjakshdfjkafsdkjhafsdkhsfd",lastpage)
+        lastpage === "dashboard" ?
+        history.push("/dashboard")
+        :history.push("/mystudents")
+    
     }
 
 
