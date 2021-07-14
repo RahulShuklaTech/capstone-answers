@@ -1,10 +1,9 @@
 import React from 'react'
-import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom'
 import firebase from '../firebaseConfig';
-import { addTeacherToDb, signedIn, signIn } from '../redux/actions/loginActions';
+import {  signedIn, signIn } from '../redux/actions/loginActions';
 import "./styles/LoginStyle.css"
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
