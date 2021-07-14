@@ -4,6 +4,7 @@ import { Login } from './components/Login';
 import { MyStudents } from './components/MyStudents';
 import { Switch, Route } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
+import Dashboard from './components/Dashboard';
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route exact path="/" component={Login} />
         
         <PrivateRoute path="/mystudents" component={MyStudents} />
+        <PrivateRoute path="/dashboard" component={Dashboard} />
       </Switch>
      
     </div>

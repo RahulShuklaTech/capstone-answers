@@ -1,11 +1,13 @@
-import {SIGNING_IN,SIGNED_IN, TEXTBOX_VALUE } from '../actions/loginActions'
+import {SIGNING_IN,SIGNED_IN, TEXTBOX_VALUE, SET_ADDING, SET_LOADING, SET_ERROR, SET_STUDENTS } from '../actions/loginActions'
 
 let initialState =  {
     user:{},
     disableButton: false,
-    
+    loading: false,
+    adding: false,
     students: [],
     textbox: "",
+    error: ""
 }
 
 
@@ -18,6 +20,15 @@ export default function loginReducer(state = initialState, action) {
             return {...state, user, disableButton: false}
         case TEXTBOX_VALUE: 
             return {...state, textbox: action.payload}
+        case SET_ADDING: 
+            return {...state, adding: action.payload}
+        case SET_LOADING: 
+            return {...state, loading: action.payload}
+        case SET_ERROR: 
+            return {...state, error: action.payload}
+        case SET_STUDENTS: 
+            return {...state, students: action.payload}
+
         default:
             return state;
     }
