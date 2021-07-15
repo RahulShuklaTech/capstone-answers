@@ -63,7 +63,7 @@ const checkValues = (value) => {
 
 export const MyStudents = () => {
     const classes = useStyles();
-    const { user, textbox, adding, error } = useSelector(state => state)
+    const { user, textbox, adding, error } = useSelector(state => state.login)
     const dispatch = useDispatch();
     const history = useHistory();
 
@@ -79,10 +79,17 @@ export const MyStudents = () => {
         if (checkData.status === true) {
             dispatch(setError(""))
             dispatch(setAdding(true))
+            
             // await await new Promise(resolve => setTimeout(resolve, 800))
             const title = user.email.replaceAll(".", "");
             const database = firebase.firestore();
             const usersRef = database.collection(title);
+            const sessionId =  usersRef.doc();
+            await sessionId.set({session: "student"});
+            console.log("session",sessionId)
+            const sessionRef = database.collection(title).doc(sessionId).collection("students");
+
+
 
             for (let student of studentNames) {
                 try {

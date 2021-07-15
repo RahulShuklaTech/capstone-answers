@@ -50,7 +50,7 @@ export const Nav = ({ location }) => {
     const history = useHistory();
     const dispatch = useDispatch();
 
-    const { user } = useSelector(state => state)
+    const { user } = useSelector(state => state.login)
     const handleLogout = () => {
         firebase.auth().signOut();
 

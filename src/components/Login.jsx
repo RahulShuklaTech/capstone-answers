@@ -18,7 +18,7 @@ export const Login = () => {
 
 
     const dispatch = useDispatch();
-    const { disableButton,lastpage } = useSelector(state => state);
+    const { disableButton,lastpage,students } = useSelector(state => state.login);
 
 
     useEffect(() => {
@@ -48,12 +48,13 @@ export const Login = () => {
         } catch (error) {
             console.log("error", error.message)
         }
-        console.log("jsadfhjakshdfjkafsdkjhafsdkhsfd",lastpage)
-        lastpage === "dashboard" ?
+        lastpage === "dashboard" && students.length ?
         history.push("/dashboard")
         :history.push("/mystudents")
     
     }
+
+    
 
 
     return (

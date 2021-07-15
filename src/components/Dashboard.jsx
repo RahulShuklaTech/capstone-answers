@@ -10,8 +10,6 @@ import { Link, useHistory } from 'react-router-dom';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 
-
-
 const useStyles = makeStyles({
     root: {
         width: '100%',
@@ -66,21 +64,16 @@ const getDataFromServer = async (dispatch, user) => {
         // console.log(user)
         const title = user.email.replaceAll(".", "");
         const usersRef = database.collection(title);
-        const doc = await usersRef.get();
-        if (doc.empty) {
-            return;
-        }
+        usersRef.onSnapshot(async snapshot => {
+            let data = [];
+            snapshot.forEach(doc => {
+                data.push(({ ...doc.data(), id: doc.id }))
+            })
+            if (data.length) {
+                dispatch(setStudents(data))
+            }
+        })
 
-        let data = [];
-        doc.forEach((doc) => {
-
-            data.push(doc.data());
-        }
-        )
-        if (data.length) {
-            console.log("data", data)
-            dispatch(setStudents(data))
-        }
 
 
         dispatch(setLoading(false));
@@ -89,7 +82,6 @@ const getDataFromServer = async (dispatch, user) => {
 
 
 const authListner = async (dispatch, history) => {
-    // setLoading(true)
     firebase.auth().onAuthStateChanged(user => {
 
         if (user) {
@@ -100,20 +92,17 @@ const authListner = async (dispatch, history) => {
         }
 
     })
-    // getDataFromServer(dispatch, user, setStudents, setLoading);
-    // setLoading(false)
 }
 
 
 
 
 const Dashboard = () => {
-    const { textbox, user, students, loading } = useSelector(state => state)
+    const {  user, students, loading } = useSelector(state => state.login)
     const dispatch = useDispatch();
     const classes = useStyles();
     const history = useHistory();
 
-    console.log("students", students);
 
 
 
@@ -130,31 +119,49 @@ const Dashboard = () => {
 
     }, [user])
 
+    const handleEnd = async () => {
+        if (user.email) {
+            const database = firebase.firestore();
+            const title = user.email.replaceAll(".", "");
+            const usersRef = database.collection(title);
+            const query = await usersRef.get()
+             for(let docc of query.docs){
+                 console.log(`docc.data().id`, docc.id)
+                 await usersRef.doc(docc.id).delete();
+             }
+
+        }
+        history.push("/mystudents")
+        // const title = user.email.replaceAll(".", "");
+    //    await deleteCollection(title)
+    }
+
+
+
+
 
 
 
     if (loading && students.length === 0) return <div className={classes.loading}><LinearProgress /></div>
-    console.log("students", typeof students)
     return (
         <Container className={classes.mystudents}>
 
 
             <Paper elevation={3} spacing={3} className={classes.root} style={{ minHeight: "100vh", minWidth: "90vw", padding: "1rem" }}>
                 <Nav location="dashboard" />
-                <Box  className = {classes.box} >
+                <Box className={classes.box} >
                     <Typography variant="h2" component="h2">
                         Dashboard
                     </Typography>
                     <Box >
-                        <Button variant="contained" color="primary" onClick={() => history.push("/")}>End Session</Button>
-                       
+                        <Button variant="contained" color="primary" onClick={() => handleEnd()}>End Session</Button>
+
                     </Box>
                 </Box>
                 <Typography variant="subtitle1" >
                     Student Link: <Link to="/">http://localhost:3000/s/students</Link>
                 </Typography>
                 <Grid container spacing={3}>
-                    {/* {students.map(student =>  console.log("sdfkhfskhsadfjk",student))} */}
                     {
                         students.map((item, index) => {
                             return (
@@ -163,9 +170,8 @@ const Dashboard = () => {
                                         <CardHeader title={item.name} />
 
                                         <CardContent>
-                                            {console.log("sdfkhfskhsadfjk", item)}
                                             {/* {item.name} */}
-                                            {/* <Typography variant="subtitle1">{(students.length && students[index].name === item.name) && students[index].answer} </Typography> */}
+                                            <Typography variant="subtitle1">{students[index].name === item.name && students[index].answer} </Typography>
                                         </CardContent>
                                     </Card>
                                 </Grid>
