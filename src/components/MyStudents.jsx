@@ -1,6 +1,5 @@
 import React from 'react'
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { useDispatch } from 'react-redux';
@@ -10,46 +9,10 @@ import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Nav } from './Nav';
 import { Box } from '@material-ui/core';
+import useStyles from './styles';
 
 
 
-const useStyles = makeStyles({
-    root: {
-        width: '70%',
-        display: 'flex',
-        flexDirection: 'column',
-        // justifyContent: 'center',
-        alignItems: 'flex-start',
-        gap: "1rem",
-        padding: '1rem',
-
-    },
-    mystudents: {
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        // alignItems: 'center',
-
-    },
-
-    photo: {
-        width: "4rem",
-        height: "4rem",
-        borderRadius: "50%",
-        alignSelf: "flex-end"
-    },
-    textarea: {
-        width: "50%",
-        minHeight: "200px",
-        border: "2px solid #303F9F",
-        padding: "1rem"
-    },
-    box: {
-        display: "flex",
-        gap: "3rem"
-    }
-});
 
 
 const checkValues = (value) => {
@@ -127,9 +90,9 @@ export const MyStudents = () => {
 
 
     return (
-        <div className={classes.mystudents}>
+        <div className={classes.mystudentsnew}>
 
-            <div className={classes.root}>
+            <div className={classes.mystudentsroot}>
                 <Nav location = "mystudents"/>
 
                 <Typography variant="h2" component="h2" >
@@ -141,13 +104,13 @@ export const MyStudents = () => {
                 </Typography>
 
                 <textarea
-                    className={classes.textarea}
+                    className={classes.textareastudents}
                     rows="3" cols="50"
                     placeholder="Enter students names here"
                     value={textbox}
                     onChange={(e) => dispatch(textboxValue(e.target.value))}
                 />
-                <Box className={classes.box}>
+                <Box className={classes.boxstudent}>
                     <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
                     {error && <p>Error adding data</p>}
                     {adding && <p>Adding data </p>}

@@ -1,4 +1,4 @@
-import { GET_STUDENTS, SET_LOADING, SET_SELECTED_STUDENT, SET_ROUTING_INFO, SET_STUDENT_ANSWER, SET_STUDENT_ANSWER_INDB } from "../actions/studentActions";
+import { GET_STUDENTS, SET_LOADING, SET_SELECTED_STUDENT, SET_ROUTING_INFO, SET_STUDENT_ANSWER, SET_SYNC_STATUS } from "../actions/studentActions";
 
 let initialState = {
     studentNames: [],
@@ -6,7 +6,8 @@ let initialState = {
     studentAnswer: "",
     loading: false,
     selectedStudent: "",
-    routingInfo: []
+    routingInfo: [],
+    sync: true,
 }
 
 export default function StudentReducer(state = initialState, action) {
@@ -15,10 +16,6 @@ export default function StudentReducer(state = initialState, action) {
             return { ...state, loading: action.payload }
 
         case GET_STUDENTS:
-            // let studentsCopy = [...state.studentNames];
-            // let studentIdsCopy = [...state.studentIds];
-            // let studentAnswersCopy = [...state.studentAnswers];
-            // studentsCopy.push(...action.payload);
             return { ...state, studentNames: action.payload };
 
         case SET_SELECTED_STUDENT:
@@ -27,16 +24,13 @@ export default function StudentReducer(state = initialState, action) {
         case SET_ROUTING_INFO:
             let info = [...state.routingInfo]
             info.push(...action.payload)
-            console.log("got info", info)
-
             return { ...state, routingInfo: info }
         
-
-
-
         case SET_STUDENT_ANSWER:
             return { ...state, studentAnswer: action.payload }
 
+        case SET_SYNC_STATUS: 
+            return { ...state, sync: action.payload }    
         default:
             return state;
 

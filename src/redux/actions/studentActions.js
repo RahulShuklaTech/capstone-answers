@@ -5,6 +5,17 @@ export const SET_LOADING = 'SET_LOADING';
 export const SET_SELECTED_STUDENT = 'SET_SELECTED_STUDENT';
 export const SET_ROUTING_INFO = 'SET_ROUTING_INFO';
 export const SET_STUDENT_ANSWER = 'SET_STUDENT_ANSWER';
+export const SET_SYNC_STATUS =  'SET_SYNC_STATUS';
+
+
+
+export const setSync = (data) => { 
+    return {
+        type: SET_SYNC_STATUS,
+        payload: data
+    }
+}
+
 
 export const setRoutingInfo = (routingInfo) => { 
     return{

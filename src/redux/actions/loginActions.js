@@ -8,9 +8,26 @@ export const SET_STUDENTS = 'SET_STUDENTS';
 export const SET_LASTPAGE = 'SET_LASTPAGE';
 export const SET_SESSIONID = 'SET_SESSIONID';
 export const SET_STUDENT_ANSWER_INDB = 'SET_STUDENT_ANSWER_INDB';
+export const ENDING_SESSION = 'ENDING_SESSION';
+export const CLEAR_ANSWERS = 'CLEAR_ANSWERS';
 
 
 
+export const clearAnswers = (data) => {
+    return {
+        type: CLEAR_ANSWERS,
+        payload: data
+    }
+}
+
+
+
+export const endSession = (data) => { 
+    return {
+        type: ENDING_SESSION,
+        payload: data
+    }
+}
 
 
 export const lastPage = (data) => {

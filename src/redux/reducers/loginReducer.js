@@ -1,4 +1,4 @@
-import {SIGNING_IN,SIGNED_IN, TEXTBOX_VALUE, SET_ADDING, SET_LOADING, SET_ERROR, SET_STUDENTS, SET_LASTPAGE, SET_SESSIONID, SET_ROUTING_INFO, SET_STUDENT_ANSWER_INDB } from '../actions/loginActions'
+import {SIGNING_IN,SIGNED_IN, TEXTBOX_VALUE, SET_ADDING, SET_LOADING, SET_ERROR, SET_STUDENTS, SET_LASTPAGE, SET_SESSIONID, SET_STUDENT_ANSWER_INDB, ENDING_SESSION, CLEAR_ANSWERS } from '../actions/loginActions'
 
 let initialState =  {
     user:{},
@@ -11,6 +11,8 @@ let initialState =  {
     lastpage:"",
     sessionId: "",
     answers: {},
+    endsession: false,
+    clearInfo: false,
 }
 
 
@@ -42,9 +44,15 @@ export default function loginReducer(state = initialState, action) {
         case SET_STUDENT_ANSWER_INDB:
             let answers = state.answers
             answers[action.payload.id] = action.payload.answer
-            // copy2.find(x => x.id === action.payload.id).answer = action.payload.answer
             return {...state, answers: state.answers}
-        default:
+        
+        case ENDING_SESSION:
+            return {...state, endsession: action.payload}
+            
+        case CLEAR_ANSWERS: 
+            return {...state, clearInfo: action.payload, answers: {}}
+        
+            default:
             return state;
     }
 }
