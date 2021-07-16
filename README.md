@@ -15,7 +15,7 @@ When the teacher goes to the site for the first time, they see a login page whic
 
 After logging in with their Google credentials the teacher sees the page where they can enter a list of students.
 
-<img src="student_list_screenshot.png" height="450" />
+<img src="/screenshots/student_list_screenshot.png" height="450" />
 
 Note:
 * The teacher should stay logged in after pressing the Refresh button
@@ -28,7 +28,7 @@ Note:
 
 When teacher clicks 'Submit', set the status message to 'Submitting...' while storing list in Firestore database
 
-<img src="setup_status_message.png" height="450" />
+<img src="/screenshots/setup_status_message.png" height="450" />
 
 Notes: 
 * If teacher tries to submit empty list or list with duplicate names, show a simple browser alert describing the error
@@ -37,7 +37,7 @@ Notes:
 
 If list is saved successfully, show the dashboard page:
 
-<img src="dashboard1_screenshot.png" height="450" />
+<img src="/screenshots/dashboard1_screenshot.png" height="450" />
 
 Note: 
 * The boxes should be sorted by student name
@@ -50,11 +50,11 @@ Note:
 
 If teacher logs out of dashboard and logs in again, show a loading indicator while retrieving the dashboard information:
 
-<img src="loading_screenshot.png" height="450" />
+<img src="/screenshots/loading_screenshot.png" height="450" />
 
 If loading fails, show an error message like this:
 
-<img src="error_screenshot.png" height="450" />
+<img src="/screenshots/error_screenshot.png" height="450" />
 
 If there is no error:
 1. Show the Setup page if the user hasn't previously submitted it
@@ -66,7 +66,7 @@ If there is no error:
 
 Add an 'End Session' button to the Dashboard page as shown below.  
 
-<img src="end_session_screenshot.png" height="450" />
+<img src="/screenshots/end_session_screenshot.png" height="450" />
 
 Note: Clicking the 'End Session' button should prompt the user to confirm that they want to end the session (use a basic browser confirmation box).  If the user confirms, then:
 1. Show a status message to the left of the button 
@@ -79,13 +79,13 @@ Note: Clicking the 'End Session' button should prompt the user to confirm that t
 
 On the Dashboard page there is a student link.   Change the way the link is generated and ensure that when the teacher shares this link with a student, the student  sees a page where they can select their name:
 
-<img src="student_select_name_screenshot.png" height="450" />
+<img src="/screenshots/student_select_name_screenshot.png" height="450" />
 
 Note: While fetching the list of student names from Firestore, display the same 'Loading...' page as in Step 3.
 
 When the student selects their name and clicks 'Continue', show the following page:
 
-<img src="student_answer_page_screenshot.png" height="450" />
+<img src="/screenshots/student_answer_page_screenshot.png" height="450" />
 
 ## Part 6: Show Student Answer on Dashboard
 
@@ -93,11 +93,11 @@ When the student selects their name and clicks 'Continue', show the following pa
 
 When the user makes a change to the text field, set the status message to 'Syncing...' and save the answer in Firestore.  If the save is successful, set the status message to 'Sync complete' as shown here:
 
-<img src="student_sync_complete.png" height="450" />
+<img src="/screenshots/student_sync_complete.png" height="450" />
 
 The Dashboard should listen for changes to the database and automatically update the associated answer fields:
 
-<img src="answer_in_dashboard.png" height="450" />
+<img src="/screenshots/answer_in_dashboard.png" height="450" />
 
 ## Part 7: Clear Answers
 
@@ -105,7 +105,7 @@ The Dashboard should listen for changes to the database and automatically update
 
 Add a 'Clear Answers' button which clears all answers (ie. set all answers to be an empty string).
 
-<img src="clear_answers_status_screenshot.png" height="450" />
+<img src="/screenshots/clear_answers_status_screenshot.png" height="450" />
 
 Note:
 * Set the status message to 'Clearing answers...' while processing the action
