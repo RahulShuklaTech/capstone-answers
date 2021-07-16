@@ -6,12 +6,31 @@ export const SET_ADDING =  'SET_ADDING';
 export const SET_ERROR = 'SET_ERROR';
 export const SET_STUDENTS = 'SET_STUDENTS';
 export const SET_LASTPAGE = 'SET_LASTPAGE';
+export const SET_SESSIONID = 'SET_SESSIONID';
+export const SET_STUDENT_ANSWER_INDB = 'SET_STUDENT_ANSWER_INDB';
+
+
 
 
 
 export const lastPage = (data) => {
     return {
         type: SET_LASTPAGE,
+        payload: data
+    }
+}
+
+export const setStudentAnswerInDB = (data) => { 
+    return{
+        type: SET_STUDENT_ANSWER_INDB,
+        payload: data
+    }
+}
+
+
+export const setSessionId = (data) => { 
+    return {
+        type: SET_SESSIONID,
         payload: data
     }
 }

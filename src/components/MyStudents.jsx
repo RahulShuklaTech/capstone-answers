@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { useDispatch } from 'react-redux';
-import { setAdding, setError, signedIn, textboxValue } from '../redux/actions/loginActions';
+import { setAdding, setError, setSessionId, signedIn, textboxValue } from '../redux/actions/loginActions';
 import firebase from '../firebaseConfig'
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -80,35 +80,28 @@ export const MyStudents = () => {
             dispatch(setError(""))
             dispatch(setAdding(true))
             
-            // await await new Promise(resolve => setTimeout(resolve, 800))
-            const title = user.email.replaceAll(".", "");
+           
             const database = firebase.firestore();
-            const usersRef = database.collection(title);
+            const usersRef = database.collection(user.uid);
             const sessionId =  usersRef.doc();
             await sessionId.set({session: "student"});
-            console.log("session",sessionId)
-            const sessionRef = database.collection(title).doc(sessionId).collection("students");
+            dispatch(setSessionId(sessionId.id));
+            const sessionRef = database.collection(user.uid).doc(sessionId.id).collection("students");
 
-
+            //adding data to firestore for the first time
 
             for (let student of studentNames) {
                 try {
-                    const id = await usersRef.doc();
-                    await id.set({ name: student, answer: "" });
+                    await sessionRef.doc(student).set({  answer: "" });
                 } catch (e) {
                     console.log("error", e.message);
-
                     dispatch(setError(e.message))
                 }
 
             }
-
-
             dispatch(setAdding(false));
-            history.push("/dashboard");
+            history.push("/dashboard/"+sessionId.id);
         }
-
-
     }
 
     const authListner = () => {
@@ -124,10 +117,6 @@ export const MyStudents = () => {
     }
 
 
-    // const handleLogout = () => { 
-    //     firebase.auth().signOut();
-    //     history.push("/")
-    // }
 
     useEffect(() => {
         authListner();
