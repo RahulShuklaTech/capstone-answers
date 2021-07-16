@@ -4,21 +4,20 @@ import { Box, Button, Card, CardContent, CardHeader, Container, Grid, Paper, Typ
 import { Nav } from './Nav';
 import { useEffect } from 'react';
 import firebase from '../firebaseConfig'
-import { setLoading, setStudents, signedIn } from '../redux/actions/loginActions';
+import { setLoading, setStudentAnswerInDB, setStudents, signedIn } from '../redux/actions/loginActions';
 import { makeStyles } from '@material-ui/core/styles';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 
 const useStyles = makeStyles({
     root: {
-        width: '100%',
-        minWidth: '100vw',
+        width: '80%',
+        minWidth: '80vw',
         display: 'flex',
         flexDirection: 'column',
-        // justifyContent: 'center',
         alignItems: 'flex-start',
-        gap: "1rem",
+        gap: "3rem",
         padding: '1rem',
 
     },
@@ -27,8 +26,18 @@ const useStyles = makeStyles({
         height: '100vh',
         display: 'flex',
         justifyContent: 'center',
+        padding: '2rem',
         // alignItems: 'center',
 
+    },
+
+    card: {
+        minHeight: '200px',
+        minWidth: '250px',
+        maxWidth: '250px',
+        borderColor: "blue",
+        textAlign: 'left',
+        padding: "5px 12px"
     },
 
     loading: {
@@ -57,25 +66,32 @@ const useStyles = makeStyles({
     }
 });
 
-const getDataFromServer = async (dispatch, user) => {
+const getDataFromServer = async (dispatch, user, session,students) => {
+    
+    
+    
+    
+    
     if (user.email) {
-        dispatch(setLoading(true))
-        const database = await firebase.firestore();
-        // console.log(user)
-        const title = user.email.replaceAll(".", "");
-        const usersRef = database.collection(title);
-        usersRef.onSnapshot(async snapshot => {
-            let data = [];
-            snapshot.forEach(doc => {
-                data.push(({ ...doc.data(), id: doc.id }))
+        
+        const database = firebase.firestore();
+        const usersRef = database.collection(user.uid).doc(session).collection("students");;
+        
+        
+        
+        if(!students.length ) {
+            dispatch(setLoading(true));
+            const data = await usersRef.get();
+            let temp = [];
+            data.forEach(doc => { 
+                let obj =  doc.data();
+                obj.id = doc.id;
+                temp.push(obj);
             })
-            if (data.length) {
-                dispatch(setStudents(data))
-            }
-        })
-
-
-
+            dispatch(setStudents(temp))
+           
+        }
+        
         dispatch(setLoading(false));
     }
 }
@@ -98,7 +114,8 @@ const authListner = async (dispatch, history) => {
 
 
 const Dashboard = () => {
-    const {  user, students, loading } = useSelector(state => state.login)
+    const { user, students, loading,answers } = useSelector(state => state.login)
+    const { session } = useParams();
     const dispatch = useDispatch();
     const classes = useStyles();
     const history = useHistory();
@@ -108,37 +125,76 @@ const Dashboard = () => {
 
     useEffect(() => {
         authListner(dispatch, history);
+        
 
 
     }, [])
 
     useEffect(() => {
         if (user.email) {
-            getDataFromServer(dispatch, user);
+            getDataFromServer(dispatch, user, session,students);
         }
 
     }, [user])
 
+
+    useEffect(() => {
+       if(students.length){ const database = firebase.firestore();
+        const usersRef = database.collection(user.uid).doc(session).collection("students");;
+        
+        try{
+            students.map(student => 
+                usersRef.doc(student.id).onSnapshot(async snapshot => {
+                    
+                    if(snapshot.data()){
+
+                        console.log("this",snapshot.data())  
+                        let obj = snapshot.data();
+                        obj.id = snapshot.id;  
+                        console.log(answers)
+                        dispatch(setStudentAnswerInDB(obj))
+
+                    }
+                    
+                })
+    
+            )
+            // usersRef.onSnapshot(async snapshot => {
+            //     let data = [];
+            //     snapshot.forEach(doc => {
+            //         let value = doc.data();
+            //         value.id = doc.id
+            //         data.push(value)
+            //     })
+            //     if (data.length) {
+            //         dispatch(setStudents(data))
+            //     }
+            // })
+            }catch(e){ 
+                console.log(e)
+            }}
+     }, [students])
+
+
+
     const handleEnd = async () => {
         if (user.email) {
             const database = firebase.firestore();
-            const title = user.email.replaceAll(".", "");
-            const usersRef = database.collection(title);
-            const query = await usersRef.get()
-             for(let docc of query.docs){
-                 console.log(`docc.data().id`, docc.id)
-                 await usersRef.doc(docc.id).delete();
-             }
 
+            const usersRef = database.collection(user.uid).doc(session).collection("students");
+
+            const query = await usersRef.get()
+            for (let docc of query.docs) {
+                // console.log(`docc.data().id`, docc.id, usersRef.doc(docc.id))
+                await usersRef.doc(docc.id).delete();
+
+            }
+            await database.collection(user.uid).doc(session).delete();
+            dispatch(setStudents([]))
         }
         history.push("/mystudents")
-        // const title = user.email.replaceAll(".", "");
-    //    await deleteCollection(title)
+
     }
-
-
-
-
 
 
 
@@ -147,7 +203,7 @@ const Dashboard = () => {
         <Container className={classes.mystudents}>
 
 
-            <Paper elevation={3} spacing={3} className={classes.root} style={{ minHeight: "100vh", minWidth: "90vw", padding: "1rem" }}>
+            <Paper elevation={3} spacing={3} className={classes.root} >
                 <Nav location="dashboard" />
                 <Box className={classes.box} >
                     <Typography variant="h2" component="h2">
@@ -159,21 +215,20 @@ const Dashboard = () => {
                     </Box>
                 </Box>
                 <Typography variant="subtitle1" >
-                    Student Link: <Link to="/">http://localhost:3000/s/students</Link>
+                    Student Link: <Link to={`/student/${user.uid}/${session}`} >http://localhost:3000/student/{user.uid}/{session}</Link>
                 </Typography>
-                <Grid container spacing={3}>
+                <Grid container spacing={10}>
                     {
-                        students.map((item, index) => {
+                        students.sort((a, b) => b.name - a.name).map((item, index) => {
                             return (
-                                <Grid item xs={12} md={4} key={index}>
-                                    <Card>
-                                        <CardHeader title={item.name} />
-
-                                        <CardContent>
-                                            {/* {item.name} */}
-                                            <Typography variant="subtitle1">{students[index].name === item.name && students[index].answer} </Typography>
-                                        </CardContent>
+                                <Grid item key={index} >
+                                    {/* {console.log("item", item)} */}
+                                    <Box style = {{textAlign: "left"}}>
+                                    <Typography variant="subtitle2" component="h4" color = "primary">{item.id}</Typography>
+                                    <Card variant="outlined" className = {classes.card}> 
+                                            <Typography variant="subtitle1">{answers[item.id]}</Typography>
                                     </Card>
+                                    </Box>
                                 </Grid>
                             )
                         })
