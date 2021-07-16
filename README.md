@@ -11,7 +11,7 @@ In this project you will create a web app which allows a teacher to log in and v
 
 When the teacher goes to the site for the first time, they see a login page which looks like this:
 
-<img src="login_screenshot.png" height="450" />
+<img src="/screenshots/login_screenshot.png" height="450" />
 
 After logging in with their Google credentials the teacher sees the page where they can enter a list of students.
 
