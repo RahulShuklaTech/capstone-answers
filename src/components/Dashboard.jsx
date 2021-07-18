@@ -97,7 +97,7 @@ const Dashboard = () => {
                     </Box>
                 </Box>
                 <Typography variant="subtitle1" >
-                    Student Link: <Link to={`/student/${user.uid}/${session}`} >http://localhost:3000/student/{user.uid}/{session}</Link>
+                    Student Link: <Link to={`/student/${user.uid}/${session}`} >https://modest-hugle-f3ed5a.netlify.app/student/{user.uid}/{session}</Link>
                 </Typography>
                 <Grid container spacing={10}>
                     {
