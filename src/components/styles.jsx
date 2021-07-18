@@ -146,8 +146,8 @@ const useStyles = makeStyles({
         alignItems: "center",
     },
     avatar: {
-        width: "75px",
-        height: "75px",
+        minWidth: "8rem",
+        minHeight: "8rem",
         borderRadius: "50%",
         color: "lightgrey",
         opacity: "0.8"
