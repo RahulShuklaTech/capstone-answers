@@ -53,7 +53,7 @@ export const Login = () => {
             <Typography variant="h5" component="h5" >
                 Welcome. Please sign in.
             </Typography>
-            <AccountCircleIcon className = {classes.avatar} />
+            <AccountCircleIcon className = {classes.avatar} style = {{width: "8rem",height: "8rem"}}/>
             
             <Button
                 variant="contained"
