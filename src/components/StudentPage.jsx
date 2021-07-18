@@ -14,17 +14,17 @@ import useStyles from './styles';
 
 const StudentPage = () => {
     const classes = useStyles();
-    let { id,session } = useParams();
-    let { loading, studentNames,selectedStudent } = useSelector(state => state.student)
+    let { id, session } = useParams();
+    let { loading, studentNames, selectedStudent } = useSelector(state => state.student)
     const history = useHistory();
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getStudentNamesFromDB(id,session));
-        dispatch(setRoutingInfo([id,session]))
+        dispatch(getStudentNamesFromDB(id, session));
+        dispatch(setRoutingInfo([id, session]))
     }, []);
 
-    const handleSubmit = (e) => { 
+    const handleSubmit = (e) => {
         history.push("/student/answers")
     }
 
@@ -32,27 +32,30 @@ const StudentPage = () => {
         return <LinearProgress />
     }
     return (
-        <div className = {classes.container}>
-            <Typography variant="h4" gutterBottom>
-                Select Your Name
-            </Typography>
-            <FormControl className={classes.formControl}>
-                <InputLabel id="demo-simple-select-label">Select Name</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={selectedStudent}
-                    onChange={(e)=>{dispatch(setSelectedStudent(e.target.value))}}
-                >{
-                        studentNames.map((studentName) =>
+        <div className={classes.mystudents}>
+            <div className={classes.studentPageContainer}>
 
-                            <MenuItem  key = {studentNames} value={studentName}>{studentName}</MenuItem>
-                        )}
+                <Typography variant="h4" gutterBottom>
+                    Select Your Name
+                </Typography>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="demo-simple-select-label" >Select Name</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={selectedStudent}
+                        onChange={(e) => { dispatch(setSelectedStudent(e.target.value)) }}
+                        style = {{minWidth: "12rem"}}
+                    >{
+                            studentNames.map((studentName) =>
 
-                </Select>
-            </FormControl>
-            <Button variant="contained" color="primary" onClick={()=>{handleSubmit()}}>Continue</Button>
+                                <MenuItem key={studentNames} value={studentName}>{studentName}</MenuItem>
+                            )}
 
+                    </Select>
+                </FormControl>
+                <Button variant="contained" color="primary" onClick={() => { handleSubmit() }}>Continue</Button>
+            </div>
         </div>
     )
 }

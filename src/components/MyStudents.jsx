@@ -3,20 +3,17 @@ import Typography from '@material-ui/core/Typography';
 import { useSelector } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { useDispatch } from 'react-redux';
-import { setAdding, setError, setSessionId, signedIn, textboxValue } from '../redux/actions/loginActions';
+import { setError, intitalizeDb, signedIn, textboxValue } from '../redux/actions/loginActions';
 import firebase from '../firebaseConfig'
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Nav } from './Nav';
-import { Box } from '@material-ui/core';
+import { Box, Container } from '@material-ui/core';
 import useStyles from './styles';
 
 
-
-
-
 const checkValues = (value) => {
-    if (value.length === 0) return { status: false, message: "Student List cannot be empty" };
+    if (value[0].length === 0 ) return { status: false, message: "Student List cannot be empty" };
     let newSet = new Set(value);
     if (newSet.size !== value.length) return { status: false, message: "Duplicate Student Names" };;
     return { status: true };
@@ -26,7 +23,7 @@ const checkValues = (value) => {
 
 export const MyStudents = () => {
     const classes = useStyles();
-    const { user, textbox, adding, error } = useSelector(state => state.login)
+    const { user, textbox, adding, error, sessionId } = useSelector(state => state.login)
     const dispatch = useDispatch();
     const history = useHistory();
 
@@ -41,29 +38,7 @@ export const MyStudents = () => {
         }
         if (checkData.status === true) {
             dispatch(setError(""))
-            dispatch(setAdding(true))
-            
-           
-            const database = firebase.firestore();
-            const usersRef = database.collection(user.uid);
-            const sessionId =  usersRef.doc();
-            await sessionId.set({session: "student"});
-            dispatch(setSessionId(sessionId.id));
-            const sessionRef = database.collection(user.uid).doc(sessionId.id).collection("students");
-
-            //adding data to firestore for the first time
-
-            for (let student of studentNames) {
-                try {
-                    await sessionRef.doc(student).set({  answer: "" });
-                } catch (e) {
-                    console.log("error", e.message);
-                    dispatch(setError(e.message))
-                }
-
-            }
-            dispatch(setAdding(false));
-            history.push("/dashboard/"+sessionId.id);
+            dispatch(intitalizeDb(user.uid,studentNames));
         }
     }
 
@@ -87,20 +62,29 @@ export const MyStudents = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    
+    useEffect(() => {
+        if(sessionId && !adding){
+            history.push("/dashboard/"+sessionId);
+        }
+        
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sessionId,adding])
+
+
 
 
     return (
-        <div className={classes.mystudentsnew}>
-
+        <Container className={classes.container}>
+            <Nav location="mystudents" />
             <div className={classes.mystudentsroot}>
-                <Nav location = "mystudents"/>
-
                 <Typography variant="h2" component="h2" >
                     My Students
                 </Typography>
 
                 <Typography variant="subtitle1" gutterBottom>
-                    Enter the names of each student who will answer your questions, separated by commas.
+                    Enter the names of each student who will answer your questions, separated by commas or a new line.
                 </Typography>
 
                 <textarea
@@ -112,10 +96,11 @@ export const MyStudents = () => {
                 />
                 <Box className={classes.boxstudent}>
                     <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
-                    {error && <p>Error adding data</p>}
-                    {adding && <p>Adding data </p>}
+                    {error && <Typography variant="subtitle1" gutterBottom>Error while adding data</Typography>}
+                    {adding && <Typography variant="subtitle1" gutterBottom>Submitting...</Typography>}
                 </Box>
             </div>
-        </div>
+        </Container>
+
     )
 }

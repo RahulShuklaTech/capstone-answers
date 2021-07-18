@@ -1,53 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Box, Button, Card, Container, Grid, Paper, Typography } from '@material-ui/core';
+import { Box, Button, Card, Container, Grid, Typography } from '@material-ui/core';
 import { Nav } from './Nav';
 import { useEffect } from 'react';
 import firebase from '../firebaseConfig'
-import { setLoading, setStudentAnswerInDB, setStudents, signedIn, endSession, clearAnswers } from '../redux/actions/loginActions';
+import { signedIn, endSession, clearAnswers, textboxValue } from '../redux/actions/loginActions';
 import useStyles from './styles';
-
 import { Link, useHistory, useParams } from 'react-router-dom';
 import LinearProgress from '@material-ui/core/LinearProgress';
-
-
-
-
-const getDataFromServer = async (dispatch, user, session, students) => {
-
-
-
-
-
-    if (user.email) {
-
-        const database = firebase.firestore();
-        const usersRef = database.collection(user.uid).doc(session).collection("students");;
-
-
-
-        if (!students.length) {
-            dispatch(setLoading(true));
-            const data = await usersRef.get();
-            let temp = [];
-            data.forEach(doc => {
-                let obj = doc.data();
-                obj.id = doc.id;
-                temp.push(obj);
-            })
-            dispatch(setStudents(temp))
-
-        }
-
-        dispatch(setLoading(false));
-    }
-}
+import { clearData,  deleteData, getDashboardData, setupListeners } from '../redux/actions/dashboardActions';
 
 
 const authListner = async (dispatch, history) => {
     firebase.auth().onAuthStateChanged(user => {
-
         if (user) {
             dispatch(signedIn(user))
         } else {
@@ -59,74 +25,44 @@ const authListner = async (dispatch, history) => {
 }
 
 
-
-
 const Dashboard = () => {
-    const { user, students, loading, answers, endsession, clearInfo } = useSelector(state => state.login)
+    const { user, answers, endsession, clearInfo } = useSelector(state => state.login)
+    const { dashboardLoading, dashboardStudents } = useSelector(state => state.dashboard);
     const { session } = useParams();
     const dispatch = useDispatch();
     const classes = useStyles();
     const history = useHistory();
 
-
-
-
     useEffect(() => {
         authListner(dispatch, history);
-
     }, [])
 
     useEffect(() => {
         if (user.email) {
-            getDataFromServer(dispatch, user, session, students);
+            dispatch(getDashboardData(user.uid, session))
         }
-
     }, [user])
 
 
     useEffect(() => {
-        if (students.length) {
-            const database = firebase.firestore();
-            const usersRef = database.collection(user.uid).doc(session).collection("students");;
-
+        if (dashboardStudents.length) {
             try {
-                students.map(student =>
-                    usersRef.doc(student.id).onSnapshot(async snapshot => {
-
-                        if (snapshot.data()) {
-                            console.log("this", snapshot.data())
-                            let obj = snapshot.data();
-                            obj.id = snapshot.id;
-                            console.log(answers)
-                            dispatch(setStudentAnswerInDB(obj))
-                        }
-                    })
-                )
-
+                dispatch(setupListeners(user.uid, session))
             } catch (e) {
                 console.log(e)
             }
         }
-    }, [students])
+    }, [dashboardStudents])
 
 
 
     const handleEnd = async () => {
         if (user.email) {
-            dispatch(endSession(true))
-            const database = firebase.firestore();
-
-            const usersRef = database.collection(user.uid).doc(session).collection("students");
-
-            const query = await usersRef.get()
-            for (let docc of query.docs) {
-                await usersRef.doc(docc.id).delete();
-
-            }
-            await database.collection(user.uid).doc(session).delete();
-            dispatch(setStudents([]))
-            dispatch(endSession(false))
-
+            dispatch(endSession(true));
+            dispatch(deleteData(user.uid, session))
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            dispatch(textboxValue(''))
+            dispatch(endSession(false));
         }
         history.push("/mystudents")
 
@@ -135,30 +71,29 @@ const Dashboard = () => {
     const handleClear = async () => {
         dispatch(clearAnswers(true))
         await new Promise(resolve => setTimeout(resolve, 1000))
-        console.log("answer",answers)
-
+        dispatch(clearData(user.uid, session))
         dispatch(clearAnswers(false))
 
     }
 
 
-
-    if (loading && students.length === 0) return <div className={classes.loading}><LinearProgress /></div>
+    if (dashboardLoading) return <div className={classes.loading}><LinearProgress /></div>
     return (
-        <Container className={classes.mystudents}>
-            <Paper elevation={3} spacing={3} className={classes.root} >
-                <Nav location="dashboard" />
-                <Box className={classes.box} >
+        <Container className={classes.container}>
+            <Nav location="dashboard" />
+            <Container className={classes.dashboard}>
+
+                <Box className={classes.box}  >
                     <Box className={classes.answerTwo}>
                         <Typography variant="h2" component="h2">
                             Dashboard
                         </Typography>
                     </Box>
                     <Box className={classes.answer}>
-                    <Button variant="contained" color="primary" onClick={handleClear}>Clear Answers</Button>
-                        {endsession && <p style={{ color: "lightgray" }} >Ending Session... </p>}
-                        {clearInfo && <p style={{ color: "lightgray" }} >Clearing Answers... </p>}
-                        <Button variant="contained" color="primary" onClick={() => handleEnd()}>End Session</Button>
+                        <Button variant="contained" color="primary" onClick={handleClear}>Clear Answers</Button>
+                        {endsession && <p >Ending Session... </p>}
+                        {clearInfo && <p >Clearing Answers... </p>}
+                        <Button variant="contained" onClick={() => handleEnd()}>End Session</Button>
                     </Box>
                 </Box>
                 <Typography variant="subtitle1" >
@@ -166,7 +101,7 @@ const Dashboard = () => {
                 </Typography>
                 <Grid container spacing={10}>
                     {
-                        students.sort((a, b) => b.name - a.name).map((item, index) => {
+                        dashboardStudents.sort((a, b) => b.name - a.name).map((item, index) => {
                             return (
                                 <Grid item key={index} >
                                     <Box style={{ textAlign: "left" }}>
@@ -180,7 +115,7 @@ const Dashboard = () => {
                         })
                     }
                 </Grid>
-            </Paper>
+            </Container>
         </Container>
     )
 }

@@ -1,3 +1,6 @@
+import { intitalizeFirebase,  startFirebase,  } from "../../firebaseMethods";
+
+
 export const SIGNING_IN = 'SIGNING_IN';
 export const SIGNED_IN = 'SIGNED_IN';
 export const TEXTBOX_VALUE = 'TEXTBOX_VALUE';
@@ -10,6 +13,14 @@ export const SET_SESSIONID = 'SET_SESSIONID';
 export const SET_STUDENT_ANSWER_INDB = 'SET_STUDENT_ANSWER_INDB';
 export const ENDING_SESSION = 'ENDING_SESSION';
 export const CLEAR_ANSWERS = 'CLEAR_ANSWERS';
+export const CLEAR_STUDENTS = 'CLEAR_STUDENTS';
+
+
+export const clearStudents = () => {
+    return {
+        type: CLEAR_STUDENTS
+    }
+}
 
 
 
@@ -107,11 +118,20 @@ export const textboxValue = (data) => {
     }
 }
 
+export const intitalizeDb = (id,studentNames) => {
+    return async function(dispatch,getState){    
+        dispatch(setAdding(true));
+        let sessionId = await intitalizeFirebase(id);
+        dispatch(setSessionId(sessionId));
+        await startFirebase(id,studentNames,sessionId);
+        dispatch(setAdding(false));
+    }
+}
 
 
 
-// export const addTeacherToDb = (teacher) => { 
-//     return async function (dispatch, getState) {
-        
-//     }
-// }
+
+
+
+
+

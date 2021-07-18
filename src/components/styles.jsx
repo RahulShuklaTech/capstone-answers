@@ -17,7 +17,6 @@ const useStyles = makeStyles({
         display: 'flex',
         justifyContent: 'center',
         padding: '2rem',
-        // alignItems: 'center',
 
     },
 
@@ -41,48 +40,73 @@ const useStyles = makeStyles({
         padding: "1rem"
     },
     box: {
-        width: "100%",
+        minWidth: "100%",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        flexWrap: "wrap"
 
     },
     answer: {
-        width: "90%",
+        minWidth: "70%",
+        maxWidth: "70%",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         
     },
     answerTwo: {
-        width: "30%",
+        minWidth: "30%",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
     },
 
     formControl: {
-        margin: "1rem",
+        margin: "",
         minWidth: 120,
     },
     selectEmpty: {
         marginTop: "2rem",
     },
+
     container: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         gap: '1rem',
+        minHeight: '100vh',
+        minWidth: '100vw',
+        maxWidth: '100vw',
+
+    },
+    studentPageContainer: {
+        display: 'flex',
+        width: "80%",
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: '1rem',
         marginTop: '2rem',
 
     },
+
+    dashboard: {
+        minWidth: "100%",
+        display: "flex",
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: "1.5rem",
+        
+    },
+
 
 
     studentAnswer: {
         marginTop: 20,
         display: 'flex',
         flexDirection: 'column',
-        gap: '2rem',
+        alignItems: 'flex-start',
+        gap: '1rem',
         width: '50%',
 
     },
@@ -90,7 +114,6 @@ const useStyles = makeStyles({
         width: '70%',
         display: 'flex',
         flexDirection: 'column',
-        // justifyContent: 'center',
         alignItems: 'flex-start',
         gap: "1rem",
         padding: '1rem',
@@ -119,7 +142,15 @@ const useStyles = makeStyles({
     },
     boxstudent: {
         display: "flex",
-        gap: "3rem"
+        gap: "3rem",
+        alignItems: "center",
+    },
+    avatar: {
+        width: "8rem",
+        height: "8rem",
+        borderRadius: "50%",
+        color: "lightgrey",
+        opacity: "0.8"
     }
     
 });

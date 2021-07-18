@@ -1,4 +1,4 @@
-import { getStudentsFromFirebase, writeAnswersTOFirebase } from "../../firebaseMethods";
+import { getStudentsFromFirebase, readAnswersFromFirebase, writeAnswersTOFirebase } from "../../firebaseMethods";
 
 export const GET_STUDENTS = 'GET_STUDENTS';
 export const SET_LOADING = 'SET_LOADING';
@@ -69,12 +69,19 @@ export const getStudentNamesFromDB = (id,session) => {
         dispatch(getStudents(studentNames));
         console.log("data from db",session,data);
         dispatch(setLoading(false))
-        
-
-        // 
-
     }
 }
+
+
+export const readStudentAnswers = (name,id,session) => {
+    return async function (dispatch, getState) {
+        dispatch(setSync(false))
+        dispatch(readAnswersFromFirebase(name,id,session));
+        dispatch(setSync(true))
+       
+    }
+}
+
 
 
 export const writeStudentAnswers = (name,id,session,answer) => {

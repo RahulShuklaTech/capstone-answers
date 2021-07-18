@@ -11,7 +11,7 @@ import StudentAnswer from './components/StudentAnswer';
 
 function App() {
   return (
-    <div className="App">
+    <div >
       <Switch>
         <Route exact path="/" component={Login} />
         
